@@ -314,6 +314,7 @@ private:
     // All the following methods throw CanceledException through print->throw_if_canceled() (sent by the caller as callback).
     void _calc_gcode_preview_extrusion_layers(GCodePreviewData& preview_data, GCodeTimeEstimator& time_estimator, std::function<void()> cancel_callback);
     void _calc_gcode_preview_travel(GCodePreviewData& preview_data, std::function<void()> cancel_callback);
+    void _calc_gcode_preview_seams(GCodePreviewData& preview_data, std::function<void()> cancel_callback);
     void _calc_gcode_preview_retractions(GCodePreviewData& preview_data, std::function<void()> cancel_callback);
     void _calc_gcode_preview_unretractions(GCodePreviewData& preview_data, std::function<void()> cancel_callback);
 };

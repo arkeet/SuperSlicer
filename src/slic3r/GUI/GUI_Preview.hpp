@@ -83,6 +83,7 @@ class Preview : public wxPanel
     wxStaticText* m_label_show_features;
     wxComboCtrl* m_combochecklist_features;
     wxCheckBox* m_checkbox_travel;
+    wxCheckBox* m_checkbox_seams;
     wxCheckBox* m_checkbox_retractions;
     wxCheckBox* m_checkbox_unretractions;
     wxCheckBox* m_checkbox_shells;
@@ -156,6 +157,7 @@ private:
     void on_choice_view_type(wxCommandEvent& evt);
     void on_combochecklist_features(wxCommandEvent& evt);
     void on_checkbox_travel(wxCommandEvent& evt);
+    void on_checkbox_seams(wxCommandEvent& evt);
     void on_checkbox_retractions(wxCommandEvent& evt);
     void on_checkbox_unretractions(wxCommandEvent& evt);
     void on_checkbox_shells(wxCommandEvent& evt);

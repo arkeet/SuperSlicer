@@ -2645,6 +2645,7 @@ void GLCanvas3D::load_gcode_preview(const GCodePreviewData& preview_data, const 
             
             _load_gcode_extrusion_paths(preview_data, tool_colors);
             _load_gcode_travel_paths(preview_data, tool_colors);
+            load_gcode_retractions(preview_data.seam,         GCodePreviewVolumeIndex::Seam,         m_volumes, m_gcode_preview_volume_index, m_initialized);
 			load_gcode_retractions(preview_data.retraction,   GCodePreviewVolumeIndex::Retraction,   m_volumes, m_gcode_preview_volume_index, m_initialized);
 			load_gcode_retractions(preview_data.unretraction, GCodePreviewVolumeIndex::Unretraction, m_volumes, m_gcode_preview_volume_index, m_initialized);
             
@@ -6600,6 +6601,12 @@ void GLCanvas3D::_update_gcode_volumes_visibility(const GCodePreviewData& previe
             case GCodePreviewVolumeIndex::Travel:
             {
                 volume->is_active = preview_data.travel.is_visible;
+                volume->zoom_to_volumes = false;
+                break;
+            }
+            case GCodePreviewVolumeIndex::Seam:
+            {
+                volume->is_active = preview_data.seam.is_visible;
                 volume->zoom_to_volumes = false;
                 break;
             }

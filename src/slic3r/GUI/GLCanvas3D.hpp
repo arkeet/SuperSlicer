@@ -128,6 +128,7 @@ public:
         {
             Extrusion,
             Travel,
+            Seam,
             Retraction,
             Unretraction,
             Shell,

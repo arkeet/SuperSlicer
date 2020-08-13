@@ -179,6 +179,7 @@ Preview::Preview(
     , m_label_show_features(nullptr)
     , m_combochecklist_features(nullptr)
     , m_checkbox_travel(nullptr)
+    , m_checkbox_seams(nullptr)
     , m_checkbox_retractions(nullptr)
     , m_checkbox_unretractions(nullptr)
     , m_checkbox_shells(nullptr)
@@ -280,6 +281,7 @@ bool Preview::init(wxWindow* parent, Bed3D& bed, Camera& camera, GLToolbar& view
     Slic3r::GUI::create_combochecklist(m_combochecklist_features, feature_text, feature_items, true);
 
     m_checkbox_travel = new wxCheckBox(this, wxID_ANY, _(L("Travel")));
+    m_checkbox_seams = new wxCheckBox(this, wxID_ANY, _(L("Seams")));
     m_checkbox_retractions = new wxCheckBox(this, wxID_ANY, _(L(width_screen == tiny ? "Retr." : "Retractions")));
     m_checkbox_unretractions = new wxCheckBox(this, wxID_ANY, _(L(width_screen == tiny ? "Unre." : "Unretractions")));
     m_checkbox_shells = new wxCheckBox(this, wxID_ANY, _(L("Shells")));
@@ -298,6 +300,8 @@ bool Preview::init(wxWindow* parent, Bed3D& bed, Camera& camera, GLToolbar& view
     bottom_sizer->Add(m_combochecklist_features, 0, wxEXPAND | wxALL, 5);
     bottom_sizer->AddSpacer(20);
     bottom_sizer->Add(m_checkbox_travel, 0, wxEXPAND | wxALL, 5);
+    bottom_sizer->AddSpacer(10);
+    bottom_sizer->Add(m_checkbox_seams, 0, wxEXPAND | wxALL, 5);
     bottom_sizer->AddSpacer(10);
     bottom_sizer->Add(m_checkbox_retractions, 0, wxEXPAND | wxALL, 5);
     bottom_sizer->AddSpacer(10);
@@ -491,6 +495,7 @@ void Preview::bind_event_handlers()
     m_choice_view_type->Bind(wxEVT_CHOICE, &Preview::on_choice_view_type, this);
     m_combochecklist_features->Bind(wxEVT_CHECKLISTBOX, &Preview::on_combochecklist_features, this);
     m_checkbox_travel->Bind(wxEVT_CHECKBOX, &Preview::on_checkbox_travel, this);
+    m_checkbox_seams->Bind(wxEVT_CHECKBOX, &Preview::on_checkbox_seams, this);
     m_checkbox_retractions->Bind(wxEVT_CHECKBOX, &Preview::on_checkbox_retractions, this);
     m_checkbox_unretractions->Bind(wxEVT_CHECKBOX, &Preview::on_checkbox_unretractions, this);
     m_checkbox_shells->Bind(wxEVT_CHECKBOX, &Preview::on_checkbox_shells, this);
@@ -503,6 +508,7 @@ void Preview::unbind_event_handlers()
     m_choice_view_type->Unbind(wxEVT_CHOICE, &Preview::on_choice_view_type, this);
     m_combochecklist_features->Unbind(wxEVT_CHECKLISTBOX, &Preview::on_combochecklist_features, this);
     m_checkbox_travel->Unbind(wxEVT_CHECKBOX, &Preview::on_checkbox_travel, this);
+    m_checkbox_seams->Unbind(wxEVT_CHECKBOX, &Preview::on_checkbox_seams, this);
     m_checkbox_retractions->Unbind(wxEVT_CHECKBOX, &Preview::on_checkbox_retractions, this);
     m_checkbox_unretractions->Unbind(wxEVT_CHECKBOX, &Preview::on_checkbox_unretractions, this);
     m_checkbox_shells->Unbind(wxEVT_CHECKBOX, &Preview::on_checkbox_shells, this);
@@ -515,6 +521,7 @@ void Preview::show_hide_ui_elements(const std::string& what)
     m_label_show_features->Enable(enable);
     m_combochecklist_features->Enable(enable);
     m_checkbox_travel->Enable(enable); 
+    m_checkbox_seams->Enable(enable);
     m_checkbox_retractions->Enable(enable);
     m_checkbox_unretractions->Enable(enable);
     m_checkbox_shells->Enable(enable);
@@ -528,6 +535,7 @@ void Preview::show_hide_ui_elements(const std::string& what)
     m_label_show_features->Show(visible);
     m_combochecklist_features->Show(visible);
     m_checkbox_travel->Show(visible);
+    m_checkbox_seams->Show(visible);
     m_checkbox_retractions->Show(visible);
     m_checkbox_unretractions->Show(visible);
     m_checkbox_shells->Show(visible);
@@ -587,6 +595,12 @@ void Preview::on_checkbox_travel(wxCommandEvent& evt)
     m_gcode_preview_data->ranges.feedrate.set_mode(GCodePreviewData::FeedrateKind::TRAVEL, m_gcode_preview_data->travel.is_visible);
     // Rather than refresh, reload print so that speed color ranges get recomputed (affected by travel visibility)
     reload_print();
+}
+
+void Preview::on_checkbox_seams(wxCommandEvent& evt)
+{
+    m_gcode_preview_data->seam.is_visible = m_checkbox_seams->IsChecked();
+    refresh_print();
 }
 
 void Preview::on_checkbox_retractions(wxCommandEvent& evt)

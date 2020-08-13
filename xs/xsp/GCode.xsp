@@ -75,6 +75,8 @@
         %code%{ THIS->extrusion.role_flags = (unsigned int)flags; %};
     void set_travel_visible(bool visible)
         %code%{ THIS->travel.is_visible = visible; %};
+    void set_seams_visible(bool visible)
+        %code%{ THIS->seams.is_visible = visible; %};
     void set_retractions_visible(bool visible)
         %code%{ THIS->retraction.is_visible = visible; %};
     void set_unretractions_visible(bool visible)

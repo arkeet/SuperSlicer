@@ -183,6 +183,9 @@ void GCodeAnalyzer::calc_gcode_preview_data(GCodePreviewData& preview_data, GCod
     // calculates travel
     _calc_gcode_preview_travel(preview_data, cancel_callback);
 
+    // calculates seams
+    _calc_gcode_preview_seams(preview_data, cancel_callback);
+
     // calculates retractions
     _calc_gcode_preview_retractions(preview_data, cancel_callback);
 
@@ -1216,6 +1219,47 @@ void GCodeAnalyzer::_calc_gcode_preview_travel(GCodePreviewData& preview_data, s
     std::sort(preview_data.travel.polylines.begin(), preview_data.travel.polylines.end(),
         [](const GCodePreviewData::Travel::Polyline& p1, const GCodePreviewData::Travel::Polyline& p2)->bool
     { return unscale<double>(p1.polyline.bounding_box().min(2)) < unscale<double>(p2.polyline.bounding_box().min(2)); });
+}
+
+void GCodeAnalyzer::_calc_gcode_preview_seams(GCodePreviewData& preview_data, std::function<void()> cancel_callback)
+{
+    TypeToMovesMap::iterator extrude_moves = m_moves_map.find(GCodeMove::Extrude);
+    if (extrude_moves == m_moves_map.end())
+        return;
+
+    Metadata data;
+    Vec3d position(FLT_MAX, FLT_MAX, FLT_MAX);
+    unsigned int extruder_id = -1;
+
+    // to avoid to call the callback too often
+    unsigned int cancel_callback_threshold = (unsigned int)std::max((int)extrude_moves->second.size() / 25, 1);
+    unsigned int cancel_callback_curr = 0;
+
+    for (const GCodeMove& move : extrude_moves->second)
+    {
+        // to avoid to call the callback too often
+        cancel_callback_curr = (cancel_callback_curr + 1) % cancel_callback_threshold;
+        if (cancel_callback_curr == 0)
+            cancel_callback();
+
+        if ((position != move.start_position) || (extruder_id != move.data.extruder_id))
+        {
+            if (is_perimeter(move.data.extrusion_role))
+            {
+                Vec3crd seam_position((int)scale_(move.start_position.x()), (int)scale_(move.start_position.y()), (int)scale_(move.start_position.z()));
+                preview_data.seam.positions.emplace_back(seam_position, move.data.width, move.data.height);
+            }
+        }
+
+        // update current values
+        position = move.end_position;
+        extruder_id = move.data.extruder_id;
+    }
+
+    // we need to sort the positions by their z as they can be shuffled in case of sequential prints
+    std::sort(preview_data.seam.positions.begin(), preview_data.seam.positions.end(),
+        [](const GCodePreviewData::Retraction::Position& p1, const GCodePreviewData::Retraction::Position& p2)->bool
+    { return unscale<double>(p1.position(2)) < unscale<double>(p2.position(2)); });
 }
 
 void GCodeAnalyzer::_calc_gcode_preview_retractions(GCodePreviewData& preview_data, std::function<void()> cancel_callback)

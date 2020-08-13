@@ -246,6 +246,7 @@ void GCodePreviewData::set_default()
 {
     extrusion.set_default();
     travel.set_default();
+    seam.set_default();
     retraction.set_default();
     unretraction.set_default();
     shell.set_default();
@@ -268,13 +269,15 @@ void GCodePreviewData::reset()
     ranges.elapsed_time.reset();
     extrusion.layers.clear();
     travel.polylines.clear();
+    seam.positions.clear();
     retraction.positions.clear();
     unretraction.positions.clear();
 }
 
 bool GCodePreviewData::empty() const
 {
-    return extrusion.layers.empty() && travel.polylines.empty() && retraction.positions.empty() && unretraction.positions.empty();
+    return extrusion.layers.empty() && travel.polylines.empty() &&
+        seam.positions.empty() && retraction.positions.empty() && unretraction.positions.empty();
 }
 
 Color GCodePreviewData::get_extrusion_role_color(ExtrusionRole role) const
@@ -584,6 +587,7 @@ size_t GCodePreviewData::memory_used() const
     return 
         this->extrusion.memory_used() + 
         this->travel.memory_used() + 
+        this->seam.memory_used() +
         this->retraction.memory_used() + 
         this->unretraction.memory_used() + 
         sizeof(shell) + sizeof(ranges);

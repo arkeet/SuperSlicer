@@ -379,6 +379,7 @@ public:
 
     Extrusion extrusion;
     Travel travel;
+    Retraction seam;
     Retraction retraction;
     Retraction unretraction;
     Shell shell;
